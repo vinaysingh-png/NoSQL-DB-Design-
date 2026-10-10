@@ -1,0 +1,105 @@
+1. Create a new MongoDB database named StudentDB and verify its successful creation
+  use StudentDB
+  db.getName()
+
+2. Create the collections Students, Faculty, and Courses within the StudentDB database
+  db.createCollection("Students")
+  db.createCollection("Faculty")
+  db.createCollection("Courses")
+  show collections
+
+3. Insert a single document into the Students collection
+    db.Students.insertOne({
+  rollNo: 101,
+  name: "Aarav Sharma",
+  department: "Information Technology",
+  semester: 5,
+  cgpa: 8.5
+  })
+
+4. Insert multiple student documents into the Students collection
+  db.Students.insertMany([
+  { rollNo: 102, name: "Priya Singh", department: "Computer Science", semester: 5, cgpa: 9.1 },
+  { rollNo: 103, name: "Rahul Verma", department: "Information Technology", semester: 5, cgpa: 7.8 },
+  { rollNo: 104, name: "Neha Gupta", department: "Electronics", semester: 3, cgpa: 8.2 }
+  ])
+
+5. Retrieve all documents stored in the Students collection
+  db.Students.find().pretty()
+
+6. Retrieve a specific student record based on the Roll Number
+  db.Students.find({ rollNo: 101 })
+
+7. Retrieve documents by applying a condition on the Department field
+  db.Students.find({ department: "Information Technology" })
+
+8. Display only selected fields (Name and Department) using field projection
+  db.Students.find({}, { name: 1, department: 1, _id: 0 })
+
+9. Update the department of a specific student using updateOne()
+  db.Students.updateOne(
+  { rollNo: 101 },
+  { $set: { department: "Computer Science & IT" } }
+  )
+
+10. Modify the semester of all students belonging to a particular department using updateMany()
+  db.Students.updateMany(
+  { department: "Information Technology" },
+  { $set: { semester: 6 } }
+  )
+
+11. Replace an existing student document using replaceOne()
+  db.Students.replaceOne(
+  { rollNo: 104 },
+  { rollNo: 104, name: "Neha Gupta Sharma", department: "Computer Science", semester: 4, cgpa: 8.4 }
+  )
+
+12. Add a new field named Email to all documents
+  db.Students.updateMany(
+  {},
+  { $set: { email: "student@coer.ac.in" } }
+  )
+
+13. Remove an existing field (e.g., email) from all documents using $unset
+  db.Students.updateMany(
+  {},
+  { $unset: { email: "" } }
+  )
+
+14. Delete a specific student document based on Roll Number using deleteOne()
+  db.Students.deleteOne({ rollNo: 103 })
+
+15. Delete multiple student records that satisfy a specified condition using deleteMany()
+  db.Students.deleteMany({ semester: { $lt: 5 } })
+
+16. Count the total number of documents present in the Students collection  
+  db.Students.countDocuments()
+
+17. Rename the Students collection to StudentDetails and verify
+  db.Students.renameCollection("StudentDetails")
+  show collections
+
+18. Create a new collection named Departments and insert sample data
+  db.createCollection("Departments")
+  db.Departments.insertMany([
+  { deptId: "IT", deptName: "Information Technology", HOD: "Dr. Kumar" },
+  { deptId: "CS", deptName: "Computer Science", HOD: "Dr. Sharma" }
+  ])
+
+19. Drop the Departments collection and verify its deletion
+  db.Departments.drop()
+  show collections
+
+20. Drop the StudentDB database and confirm removal
+  db.dropDatabase()
+  show dbs
+
+21. Recreate the StudentDB database and insert sample data after deletion
+  use StudentDB
+  db.Students.insertOne({
+  rollNo: 201,
+  name: "Amit Kumar",
+  department: "Information Technology",
+  semester: 5,
+  cgpa: 8.9
+  })

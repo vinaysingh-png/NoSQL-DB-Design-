@@ -1,0 +1,167 @@
+1. Install and configure Riak KV on a Linux system. Create a bucket named students  and perform basic key-value operations such as storing, retrieving, updating, and deleting  student records.
+  sudo apt-get update
+  sudo apt-get install -y apt-transport-https
+  # Add official repository and install riak package
+  sudo apt-get install riak
+
+  sudo riak start
+  riak ping
+  curl -X PUT http://localhost:8098/types/default/buckets/students/keys/student1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Aarav", "course": "BCA", "semester": 5}'
+  curl -X GET http://localhost:8098/types/default/buckets/students/keys/student1
+  curl -X PUT http://localhost:8098/types/default/buckets/students/keys/student1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Aarav", "course": "BCA", "semester": 6}'
+  curl -X DELETE http://localhost:8098/types/default/buckets/students/keys/student1
+
+2.Using Riak KV, create a user_sessions bucket to store user session information. 
+  Store session ID, user ID, login time, and session status, and retrieve session information 
+  using its key. 
+  curl -X PUT http://localhost:8098/types/default/buckets/user_sessions/keys/sess_1001 \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId": "sess_1001", "userId": "u_889", "loginTime": "2026-06-06T10:00:00Z", "status": "active"}'
+  curl -X GET http://localhost:8098/types/default/buckets/user_sessions/keys/sess_1001
+
+3.Design a Riak KV application for storing user profiles and preferences. Store details  such as name, email, city, language, theme, and notification preferences. Demonstrate PUT  and GET operations. 
+  curl -X PUT http://localhost:8098/types/default/buckets/profiles/keys/user_neha \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Neha",
+    "email": "neha@coer.ac.in",
+    "city": "Roorkee",
+    "language": "English",
+    "theme": "dark",
+    "notifications": {"email": true, "sms": false}
+  }'
+
+  curl -X GET http://localhost:8098/types/default/buckets/profiles/keys/user_neha
+
+4.Implement a shopping cart application using Riak KV. Store a shopping cart for each user containing product IDs, quantities, and prices. Demonstrate adding, updating,  retrieving, and removing products from the cart. 
+  curl -X PUT http://localhost:8098/types/default/buckets/shopping_carts/keys/cart_neha \
+  -H "Content-Type: application/json" \
+  -d '{
+    "items": [
+      {"productId": "P101", "quantity": 2, "price": 450.00},
+      {"productId": "P205", "quantity": 1, "price": 1200.00}
+    ]
+  }'
+
+5.Demonstrate the structure of data in a key-value store using Riak. Store different types  of values such as strings, JSON documents, and lists. Retrieve the stored values and explain  the role of bucket, key, and value. 
+  String: curl -X PUT 
+  http://localhost:8098/types/default/buckets/test/keys/str_key -H 
+  "Content-Type: text/plain" -d "Hello Riak"
+
+  JSON Document: curl -X PUT 
+  http://localhost:8098/types/default/buckets/test/keys/json_key -H 
+  "Content-Type: application/json" -d '{"status":"ok"}'
+
+  List (serialized as JSON array): curl -X PUT 
+  http://localhost:8098/types/default/buckets/test/keys/list_key -H 
+  "Content-Type: application/json" -d '[1, 2, 3, 4]'
+
+6.Demonstrate consistency in Riak KV by configuring suitable read and write quorum  values. Perform read/write operations and explain how Riak handles consistency in a  distributed environment.
+  # Write with W=2, R=2
+  curl -X PUT "http://localhost:8098/types/default/buckets/students/keys/student1?w=2&dw=2" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Rahul"}'
+
+7.Design a Riak-based application that demonstrates scaling. Create multiple buckets and  insert a large number of key-value records. Explain how Riak distributes data across nodes  and supports horizontal scaling. 
+  Concept: Riak uses consistent hashing via a Ring (typically partitioned into 64 or 1024 virtual nodes or vnodes).
+
+  Implementation: Multiple buckets (bucket_a, bucket_b) can be populated with 
+  thousands of keys concurrently. As nodes are added to the cluster, vnodes are 
+  automatically transferred to new nodes, distributing data evenly and supporting horizontal 
+  scaling without manual sharding.
+
+8.Implement a multi-operation transaction-like scenario using Riak KV for a shopping  application. Perform multiple related operations such as adding an item to a cart, updating  its quantity, and updating the cart total. Discuss the limitations of transactions in a key-value database.
+  Scenario: Simulating a cart checkout or multi-step cart update requires successive PUT 
+  operations to update items and update a separate cart-total key.
+
+  Limitations: Riak KV is a key-value store and does not support multi-row ACID transactions 
+  out-of-the-box. If a failure occurs mid-way through updating items and totals, data can 
+  become temporarily inconsistent, requiring application-level compensation logic
+
+9.Using Riak, implement query-by-data functionality for user records. Store JSON documents containing user information and demonstrate how application-level logic can be used to locate users based on attributes such as city, age, or preferences.
+  Since Riak KV lacks native secondary indexing on arbitrary JSON fields without setup, 
+  query-by-data is implemented at the application level:
+  ~Retrieve lists of keys using bucket streaming/list keys.
+  ~Fetch JSON documents for each key.
+  ~Filter records in application logic (e.g., checking if city == "Roorkee" or age > 20).
+
+10.Implement set operations in a Riak-based application. Create sets containing user interests or product categories and demonstrate operations such as adding elements, removing elements, checking membership, and finding common elements.
+  Riak supports special data types called CRDTs (Conflict-Free Replicated Data Types), including Riak Sets (DTSet).
+  Operations: You can add elements, remove elements, and query state natively using Riak's DT interface or emulate 
+  sets using JSON arrays containing unique product categories/interests within application logic.
+
+11.Install and configure Neo4j. Create a graph containing Student, Course, and Department nodes with appropriate relationships. Insert sample data and visualize the resulting graph.
+  // Create Departments
+  CREATE (d1:Department {deptId: "CS", name: "Computer Science"})
+  CREATE (d2:Department {deptId: "IT", name: "Information Technology"})
+
+  // Create Courses
+  CREATE (c1:Course {courseId: "BCA305", title: "NoSQL Databases"})
+  CREATE (c2:Course {courseId: "BCA306", title: "Graph Databases"})
+
+  // Create Students
+  CREATE (s1:Student {studentId: "S01", name: "Neha", semester: 5})
+
+  // Create Relationships
+  MATCH (s:Student {studentId: "S01"}), (d:Department {deptId: "IT"})
+  CREATE (s)-[:BELONGS_TO]->(d)
+
+  MATCH (s:Student {studentId: "S01"}), (c:Course {courseId: "BCA305"})
+  CREATE (s)-[:ENROLLED_IN]->(c)
+
+12.Using Neo4j Cypher, create a social-network graph containing Person nodes and relationships such as FRIENDS_WITH, FOLLOWS, and WORKS_AT. Write queries to find a person's friends and followers. 
+  // Create Persons and relationships
+  CREATE (p1:Person {name: "Aarav"})
+  CREATE (p2:Person {name: "Neha"})
+  CREATE (p1)-[:FRIENDS_WITH]->(p2)
+  CREATE (p2)-[:FOLLOWS]->(p1)
+
+  // Query to find a person's friends
+  MATCH (p:Person {name: "Neha"})-[:FRIENDS_WITH]->(friend)
+  RETURN friend.name
+
+  // Query to find a person's followers
+  MATCH (follower)-[:FOLLOWS]->(p:Person {name: "Neha"})
+  RETURN follower.name
+
+13.Design a shopping/e-commerce graph using Neo4j containing Customer, Product, Category, and Order nodes. Create appropriate relationships and write Cypher queries to find products purchased by a particular customer. 
+  // Create Nodes
+  CREATE (cust:Customer {customerId: "C100", name: "Neha"})
+  CREATE (cat:Category {catId: "CAT1", name: "Electronics"})
+  CREATE (prod:Product {productId: "P99", name: "Wireless Mouse", price: 799})
+  CREATE (ord:Order {orderId: "ORD500", date: "2026-10-09"})
+
+  // Create Relationships
+  CREATE (prod)-[:BELONGS_TO]->(cat)
+  CREATE (cust)-[:PLACED]->(ord)
+  CREATE (ord)-[:CONTAINS]->(prod)
+
+  // Query products purchased by a particular customer
+  MATCH (c:Customer {name: "Neha"})-[:PLACED]->(o:Order)-[:CONTAINS]->(p:Product)
+  RETURN p.name AS ProductName, p.price AS Price
+
+14.Demonstrate transactions, consistency, and availability in Neo4j. Perform multiple CREATE, MATCH, SET, and DELETE operations inside a transaction and explain how transaction management maintains consistent graph data. 
+  BEGIN
+  MATCH (c:Customer {customerId: "C100"})
+  SET c.lastActive = "2026-10-09"
+  CREATE (o:Order {orderId: "ORD501", total: 1500})
+  CREATE (c)-[:PLACED]->(o)
+  COMMIT
+
+15. Develop a small Graph Database application using Neo4j and a programming language such as Python, Java, or JavaScript. Implement CRUD operations and Cypher queries. Demonstrate how graph databases support relationship-based queries, scaling, availability, and suitable use cases such as social networks, recommendation systems, fraud detection, and knowledge graphs.
+  from neo4j import GraphDriver, GraphDatabase
+  uri = "bolt://localhost:7687"
+  driver = GraphDatabase.driver(uri, auth=("neo4j", "password"))
+  def add_student(tx, student_id, name):
+  tx.run(
+      "CREATE (s:Student {studentId: $s_id, name: $name})",
+      s_id=student_id,
+      name=name,
+  )
+  with driver.session() as session:
+  session.execute_write(add_student, "S99", "Aman")
+  driver.close()

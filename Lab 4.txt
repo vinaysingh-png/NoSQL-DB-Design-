@@ -1,0 +1,203 @@
+1.Install and configure Apache HBase. Create a table named Student with column families personal and academic. Insert at least five student records and display them using HBase shell commands.
+  # Create table with column families 'personal' and 'academic'
+  create 'Student', 'personal', 'academic'
+
+  # Insert 5 student records
+  put 'Student', '101', 'personal:name', 'Aarav Sharma'
+  put 'Student', '101', 'academic:course', 'BCA'
+  put 'Student', '101', 'academic:marks', '85.5'
+
+  put 'Student', '102', 'personal:name', 'Priya Singh'
+  put 'Student', '102', 'academic:course', 'BCA'
+  put 'Student', '102', 'academic:marks', '91.0'
+
+  put 'Student', '103', 'personal:name', 'Rahul Verma'
+  put 'Student', '103', 'academic:course', 'BSc IT'
+  put 'Student', '103', 'academic:marks', '78.0'
+
+  put 'Student', '104', 'personal:name', 'Neha Gupta'
+  put 'Student', '104', 'academic:course', 'MCA'
+  put 'Student', '104', 'academic:marks', '88.5'
+
+  put 'Student', '105', 'personal:name', 'Amit Kumar'
+  put 'Student', '105', 'academic:course', 'BCA'
+  put 'Student', '105', 'academic:marks', '82.0'
+
+  # Display all records
+  scan 'Student'
+
+2.Using Apache HBase, perform basic CRUD operations on an Employee table. Demonstrate create, put, get, scan, and delete operations.
+  # Create table
+  create 'Employee', 'info', 'salary'
+
+  # 1. Put (Create/Insert record)
+  put 'Employee', 'E01', 'info:name', 'Rohan'
+  put 'Employee', 'E01', 'info:dept', 'IT'
+  put 'Employee', 'E01', 'salary:basic', '50000'
+
+  # 2. Get (Retrieve specific record)
+  get 'Employee', 'E01'
+
+  # 3. Scan (Retrieve all records)
+  scan 'Employee'
+
+  # 4. Update (Overwrite value using put)
+  put 'Employee', 'E01', 'salary:basic', '55000'
+
+  # 5. Delete operations
+  delete 'Employee', 'E01', 'info:dept'
+  deleteall 'Employee', 'E01'
+
+3.Design an HBase table for an Event Logging System. Store event_id, timestamp, user information, event type, and status using appropriate column families. Insert sample events and retrieve them based on row keys.
+  create 'EventLog', 'details', 'audit'
+
+  # Insert sample event logs
+  put 'EventLog', '2026-10-08_U101', 'details:eventType', 'login'
+  put 'EventLog', '2026-10-08_U101', 'details:userInfo', 'Aarav Sharma (IP: 192.168.1.10)'
+  put 'EventLog', '2026-10-08_U101', 'audit:status', 'SUCCESS'
+
+  put 'EventLog', '2026-10-08_U102', 'details:eventType', 'failed-login'
+  put 'EventLog', '2026-10-08_U102', 'details:userInfo', 'Priya Singh (IP: 192.168.1.20)'
+  put 'EventLog', '2026-10-08_U102', 'audit:status', 'FAILURE'
+
+  # Retrieve based on row keys
+  get 'EventLog', '2026-10-08_U101'
+
+4.Create an HBase table for a Content Management System (CMS) with column families such as content, author, and metadata. Insert, update, retrieve, and delete content records. 
+  create 'CMS_Content', 'content', 'author', 'metadata'
+  # Insert
+  put 'CMS_Content', 'DOC001', 'content:body', 'Introduction to HBase architecture.'
+  put 'CMS_Content', 'DOC001', 'author:name', 'Admin'
+  put 'CMS_Content', 'DOC001', 'metadata:category', 'Technology'
+  # Update
+  put 'CMS_Content', 'DOC001', 'content:body', 'Updated HBase architecture overview.'
+  # Retrieve
+  get 'CMS_Content', 'DOC001'
+  # Delete
+  deleteall 'CMS_Content', 'DOC001'
+
+5.Implement a simple Blogging Platform using HBase. Create suitable column families for blog details, author information, and comments. Insert at least three blog records and retrieve a particular blog using its row key. 
+  create 'BlogPlatform', 'blog', 'author', 'comments'
+
+  # Insert 3 blog records
+  put 'BlogPlatform', 'B01', 'blog:title', 'NoSQL vs RDBMS'
+  put 'BlogPlatform', 'B01', 'blog:category', 'Database'
+  put 'BlogPlatform', 'B01', 'author:name', 'Aarav'
+  put 'BlogPlatform', 'B01', 'comments:c1', 'Great article!'
+
+  put 'BlogPlatform', 'B02', 'blog:title', 'Understanding HBase'
+  put 'BlogPlatform', 'B02', 'blog:category', 'Big Data'
+  put 'BlogPlatform', 'B02', 'author:name', 'Priya'
+  put 'BlogPlatform', 'B02', 'comments:c1', 'Very informative.'
+
+  put 'BlogPlatform', 'B03', 'blog:title', 'Cassandra Tuning'
+  put 'BlogPlatform', 'B03', 'blog:category', 'NoSQL'
+  put 'BlogPlatform', 'B03', 'author:name', 'Rahul'
+  put 'BlogPlatform', 'B03', 'comments:c1', 'Helpful guide.'
+
+  # Retrieve a particular blog using row key
+  get 'BlogPlatform', 'B01'
+
+6.Demonstrate the column-family data model in HBase by creating a table with multiple column families and different qualifiers. Explain through your implementation how HBase stores columns within column families.
+  create 'DataModelDemo', 'cf1', 'cf2'
+  put 'DataModelDemo', 'row1', 'cf1:col1', 'val1'
+  put 'DataModelDemo', 'row1', 'cf1:col2', 'val2'
+  put 'DataModelDemo', 'row1', 'cf2:colA', 'valA'
+
+7.Create an HBase table named WebsiteCounter to maintain page-view counters. Implement increment operations and display the updated counter values for different pages.
+  create 'WebsiteCounter', 'metrics'
+
+  # Increment page views atomically
+  incr 'WebsiteCounter', 'home_page', 'metrics:views', 1
+  incr 'WebsiteCounter', 'home_page', 'metrics:views', 1
+  incr 'WebsiteCounter', 'courses_page', 'metrics:views', 5
+
+  # Display updated counter values
+  get 'WebsiteCounter', 'home_page'
+  get 'WebsiteCounter', 'courses_page'
+
+8. Implement expiring usage/session data using HBase. Design a table for user sessions and configure a TTL (Time-To-Live) for the required column family. Insert session records and verify their expiration behavior.
+  # Create table with TTL of 86400 seconds (1 day) on session column family
+  create 'UserSessions', {NAME => 'session', TTL => 86400}
+  # Insert session records
+  put 'UserSessions', 'sess_001', 'session:token', 'xyz123abc'
+  put 'UserSessions', 'sess_001', 'session:user', 'aarav'
+  # Verify record
+  get 'UserSessions', 'sess_001'
+
+9.Design an HBase table for a large-scale application and explain how its row-key design can support horizontal scaling. Demonstrate insertion of records using a suitable row-key strategy. 
+  create 'LogData', 'data'
+  put 'LogData', 'a3f2_2026-10-08T10:50:00', 'data:payload', 'User login action'
+
+10.Create an HBase table with multiple regions and demonstrate how HBase distributes data across regions. Explain the role of RegionServers in achieving scalability and availability. 
+  HBase automatically splits large tables into contiguous row ranges called Regions. RegionServers host these regions, serving client read/write requests, performing compactions, and ensuring horizontal scalability and high availability across distributed nodes.
+
+11.Install and configure Apache Cassandra. Create a keyspace named CollegeDB with an appropriate replication factor and create a Students table. Insert and retrieve at least five student records. 
+  -- Create Keyspace
+  CREATE KEYSPACE CollegeDB WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
+  USE CollegeDB;
+
+  -- Create Students Table
+  CREATE TABLE Students (
+    Student_ID int PRIMARY KEY,
+    Name text,
+    Course text,
+    Semester int,
+    Marks double
+  );
+
+  -- Insert 5 records
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (1, 'Aarav Sharma', 'BCA', 5, 85.5);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (2, 'Priya Singh', 'BCA', 5, 91.0);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (3, 'Rahul Verma', 'BSc IT', 3, 78.0);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (4, 'Neha Gupta', 'MCA', 1, 88.5);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (5, 'Amit Kumar', 'BCA', 5, 82.0);
+
+12.Using Apache Cassandra, perform CRUD operations on an Employees table. Demonstrate INSERT, SELECT, UPDATE, and DELETE operations using CQL. 
+  CREATE TABLE Employees (
+    Emp_ID int PRIMARY KEY,
+    Name text,
+    Department text,
+    Salary double
+  );
+  -- 1. INSERT
+  INSERT INTO Employees (Emp_ID, Name, Department, Salary) VALUES (101, 'Rohan', 'IT', 60000);
+  -- 2. SELECT
+  SELECT * FROM Employees WHERE Emp_ID = 101;
+  -- 3. UPDATE
+  UPDATE Employees SET Salary = 65000 WHERE Emp_ID = 101;
+  -- 4. DELETE
+  DELETE FROM Employees WHERE Emp_ID = 101;
+  SELECT * FROM Students;
+
+13.Design a Cassandra database for an event logging application. Create an appropriate table, insert multiple events, and write CQL queries to retrieve events for a particular user and time period. 
+  CREATE TABLE UserEvents (
+    user_id text,
+    event_date text,
+    event_time timestamp,
+    event_type text,
+    details text,
+    PRIMARY KEY ((user_id, event_date), event_time)
+  ) WITH CLUSTERING ORDER BY (event_time DESC);
+
+  -- Insert sample events
+  INSERT INTO UserEvents (user_id, event_date, event_time, event_type, details) 
+  VALUES ('U101', '2026-10-08', '2026-10-08 10:00:00', 'LOGIN', 'Successful login');
+
+  -- Retrieve events for a user and date period
+  SELECT * FROM UserEvents WHERE user_id = 'U101' AND event_date = '2026-10-08';
+
+14.Demonstrate availability and consistency in Cassandra by creating a keyspace with a suitable replication strategy. Perform read/write operations using different consistency levels such as ONE, QUORUM, and ALL, and observe the behavior. 
+  CONSISTENCY ONE;
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (6, 'Ankit', 'BCA', 5, 80.0);
+
+  CONSISTENCY QUORUM;
+  SELECT * FROM Students WHERE Student_ID = 6;
+
+  CONSISTENCY ALL;
+  SELECT * FROM Students;
+
+15.Design and implement a column-oriented NoSQL application using HBase or Cassandra for any one of the following: Event Logging, Content Management, Blogging Platform, Counters, or Expiring Usage. Demonstrate database/table creation, data insertion, querying, updating, deletion, and explain how consistency, availability, transactions, query features, and scaling are handled by the selected database.
+  Application Architecture: Designed using Apache Cassandra/HBase for Event Logging/Blogging.   
+  Core Operations: Covered table initialization, record insertion, querying, updating, and deletion.   
+  Scalability & Consistency: Balanced using tunable consistency levels, partition keys, and masterless/master-slave distributed scaling mechanisms.

@@ -1,0 +1,263 @@
+1. RDBMS vs. NoSQL Document Model Comparison
+  #MySQL Implementation:
+  CREATE DATABASE CollegeDB;
+  USE CollegeDB;
+
+  CREATE TABLE Students (
+    Student_ID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Course VARCHAR(50),
+    Semester INT,
+    Marks DECIMAL(5,2)
+);
+
+  INSERT INTO Students VALUES (1, 'Aarav Sharma', 'BCA', 5, 85.5);
+  INSERT INTO Students VALUES (2, 'Priya Singh', 'BCA', 5, 91.0);
+  INSERT INTO Students VALUES (3, 'Rahul Verma', 'BSc IT', 3, 78.0);
+  INSERT INTO Students VALUES (4, 'Neha Gupta', 'MCA', 1, 88.5);
+  INSERT INTO Students VALUES (5, 'Amit Kumar', 'BCA', 5, 82.0);
+
+#MongoDB Equivalent Document Model:
+  use CollegeDB
+  db.Students.insertMany([
+  { Student_ID: 1, Name: "Aarav Sharma", Course: "BCA", Semester: 5, Marks: 85.5 },
+  { Student_ID: 2, Name: "Priya Singh", Course: "BCA", Semester: 5, Marks: 91.0 },
+  { Student_ID: 3, Name: "Rahul Verma", Course: "BSc IT", Semester: 3, Marks: 78.0 },
+  { Student_ID: 4, Name: "Neha Gupta", Course: "MCA", Semester: 1, Marks: 88.5 },
+  { Student_ID: 5, Name: "Amit Kumar", Course: "BCA", Semester: 5, Marks: 82.0 }
+  ])
+
+2. MongoDB Student Operations
+  use CollegeDB
+
+  // 1. Display all documents
+  db.Students.find().pretty()
+
+  // 2. Find students from a particular course
+  db.Students.find({ Course: "BCA" })
+
+  // 3. Update marks of a student
+  db.Students.updateOne({ Student_ID: 1 }, { $set: { Marks: 90.0 } })
+
+  // 4. Delete one student
+  db.Students.deleteOne({ Student_ID: 5 })
+
+  // 5. Count total students
+  db.Students.countDocuments()
+  
+3. Embedded Documents in MongoDB (Orders Collection)
+  // 1. Insert at least five orders with embedded products
+  db.Orders.insertMany([
+  { orderId: "O101", customerName: "Rohan", products: [{ prodName: "Laptop", qty: 1, price: 50000 }, { prodName: "Mouse", qty: 2, price: 500 }] },
+  { orderId: "O102", customerName: "Pooja", products: [{ prodName: "Phone", qty: 1, price: 20000 }] },
+  { orderId: "O103", customerName: "Rohan", products: [{ prodName: "Keyboard", qty: 1, price: 1500 }] },
+  { orderId: "O104", customerName: "Amit", products: [{ prodName: "Monitor", qty: 1, price: 12000 }, { prodName: "HDMI Cable", qty: 2, price: 300 }] },
+  { orderId: "O105", customerName: "Neha", products: [{ prodName: "Tablet", qty: 1, price: 25000 }] }
+  ])
+
+  // 2. Display orders of a particular customer
+  db.Orders.find({ customerName: "Rohan" })
+
+  //  3. Update the quantity of a product inside an embedded array
+  db.Orders.updateOne(
+  { orderId: "O101", "products.prodName": "Mouse" },
+  { $set: { "products.$.qty": 3 } }
+  )
+
+  // 4. Calculate total order amount using aggregation
+  db.Orders.aggregate([
+  { $unwind: "$products" },
+  { $group: { _id: "$orderId", totalAmount: { $sum: { $multiply: ["$products.qty", "$products.price"] } } } }
+  ])
+
+4. Redis Key-Value Operations
+    # 1 & 2. Insert at least five students (Key = Student ID, Value = Student Name)
+  SET student:1 "Aarav"
+  SET student:2 "Priya"
+  SET student:3 "Rahul"
+  SET student:4 "Neha"
+  SET student:5 "Amit"
+
+  # 3. Retrieve a student using the key
+  GET student:1
+
+  # 4. Update a student's value
+  SET student:1 "Aarav Sharma"
+
+  # 5. Delete a student
+  DEL student:5
+
+
+  # 6. Display all available keys
+  KEYS *
+
+5. Apache Cassandra Operations
+  -- Create Keyspace and Table
+  CREATE KEYSPACE IF NOT EXISTS CollegeDB WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
+  USE CollegeDB;
+
+  CREATE TABLE Students (
+    Student_ID int PRIMARY KEY,
+    Name text,
+    Course text,
+    Semester int,
+    Marks double
+  );
+
+  -- 1. Insert records
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (1, 'Aarav', 'BCA', 5, 85.5);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (2, 'Priya', 'BCA', 5, 91.0);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (3, 'Rahul', 'BSc IT', 3, 78.0);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (4, 'Neha', 'MCA', 1, 88.5);
+  INSERT INTO Students (Student_ID, Name, Course, Semester, Marks) VALUES (5, 'Amit', 'BCA', 5, 82.0);
+
+  -- 2. Display all records
+  SELECT * FROM Students;
+
+  -- 3. Retrieve students from a particular course (Requires secondary index in Cassandra)
+  CREATE INDEX ON Students(Course);
+  SELECT * FROM Students WHERE Course = 'BCA';
+
+  -- 4. Update marks
+  UPDATE Students SET Marks = 89.0 WHERE Student_ID = 1;
+
+  -- 5. Delete a student record
+  DELETE FROM Students WHERE Student_ID = 5;
+
+6. Apache HBase Operations
+  # Create Table with Column Families 'personal' and 'academic'
+  create 'Students', 'personal', 'academic'
+
+  # 1. Insert at least five student records
+  put 'Students', '1', 'personal:name', 'Aarav'
+  put 'Students', '1', 'academic:course', 'BCA'
+  put 'Students', '1', 'academic:marks', '85.5'
+
+  put 'Students', '2', 'personal:name', 'Priya'
+  put 'Students', '2', 'academic:course', 'BCA'
+  put 'Students', '2', 'academic:marks', '91.0'
+
+  put 'Students', '3', 'personal:name', 'Rahul'
+  put 'Students', '3', 'academic:course', 'BSc IT'
+  put 'Students', '3', 'academic:marks', '78.0'
+
+  put 'Students', '4', 'personal:name', 'Neha'
+  put 'Students', '4', 'academic:course', 'MCA'
+  put 'Students', '4', 'academic:marks', '88.5'
+
+  put 'Students', '5', 'personal:name', 'Amit'
+  put 'Students', '5', 'academic:course', 'BCA'
+  put 'Students', '5', 'academic:marks', '82.0'
+
+  # 2. Retrieve a particular student's details
+  get 'Students', '1'
+
+  # 3. Update student information
+  put 'Students', '1', 'academic:marks', '90.0'
+
+  # 4. Display all records
+  scan 'Students'
+
+  # 5. Delete a student record
+  deleteall 'Students', '5'
+
+7. Neo4j Graph Database (Cypher Queries)
+  // 1. Create students and courses, and ENROLLED_IN relationships
+  CREATE (s1:Student {name: 'Aarav', id: 1})
+  CREATE (s2:Student {name: 'Priya', id: 2})
+  CREATE (s3:Student {name: 'Rahul', id: 3})
+  CREATE (s4:Student {name: 'Neha', id: 4})
+  CREATE (s5:Student {name: 'Amit', id: 5})
+
+  CREATE (c1:Course {title: 'NoSQL Databases'})
+  CREATE (c2:Course {title: 'Data Analytics'})
+  CREATE (c3:Course {title: 'Web Development'})
+
+  CREATE (s1)-[:ENROLLED_IN]->(c1)
+  CREATE (s1)-[:ENROLLED_IN]->(c2)
+  CREATE (s2)-[:ENROLLED_IN]->(c1)
+  CREATE (s3)-[:ENROLLED_IN]->(c3)
+  CREATE (s4)-[:ENROLLED_IN]->(c2)
+  CREATE (s5)-[:ENROLLED_IN]->(c1);
+
+  // 2. Display all students
+  MATCH (s:Student) RETURN s;
+
+  // 3. Find students enrolled in a particular course
+  MATCH (s:Student)-[:ENROLLED_IN]->(c:Course {title: 'NoSQL Databases'}) RETURN s;
+
+  // 4. Display all courses taken by a particular student
+  MATCH (s:Student {name: 'Aarav'})-[:ENROLLED_IN]->(c:Course) RETURN c;
+
+  // 5. Add and remove a relationship
+  // Add relationship:
+  MATCH (s:Student {name: 'Priya'}), (c:Course {title: 'Data Analytics'})
+  CREATE (s)-[:ENROLLED_IN]->(c);
+
+  // Remove relationship:
+  MATCH (s:Student {name: 'Aarav'})-[r:ENROLLED_IN]->(c:Course {title: 'Data Analytics'})
+  DELETE r;
+
+9. Single Server Setup   
+  ~Install MongoDB via terminal: sudo apt-get install mongodb-org   
+  ~Start service: sudo systemctl start mongod   
+  ~Open shell mongosh, create database (use CollegeDB), create collection (db.createCollection("Students")), and execute CRUD commands.
+
+10. MongoDB Sharding Demonstration
+  // 1. Enable sharding on database
+  sh.enableSharding("CollegeDB")
+
+  // 2. Choose shard key (e.g., Student_ID) and shard collection
+  db.adminCommand({ shardCollection: "CollegeDB.Students", key: { Student_ID: 1 } })
+
+  // 3 & 4. Insert 20+ records to trigger distribution across logical shards
+  // 5. Verify distribution status
+  db.Students.getShardDistribution()
+
+11. Master-Slave (Primary-Secondary) Replication
+  ~Start mongod instances with replica set configuration: mongod --port 27017 --replSet rs0   
+  ~Initialize replica set in shell: rs.initiate()   
+  ~Add secondary node: rs.add("secondary-host:27018")   
+  ~Insert data into the Primary and verify data sync on Secondary using rs.secondaryOk() followed by db.Students.find().
+
+12. Peer-to-Peer Replication (Cassandra)
+  ~Configure multiple Cassandra nodes in cassandra.yaml (set cluster name and seeds).
+  ~Create keyspace with replication factor:
+
+  CREATE KEYSPACE PeerCluster WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': 2};
+
+14. MapReduce Operation in MongoDB
+  // Map Function: Emits course as key and 1 (for count) or marks (for average) as value
+  var mapFunction = function() {
+    emit(this.Course, { count: 1, totalMarks: this.Marks });
+  };
+
+  // Reduce Function: Aggregates counts and total marks per course
+  var reduceFunction = function(key, values) {
+    reducedVal = { count: 0, totalMarks: 0 };
+    for (var i = 0; i < values.length; i++) {
+        reducedVal.count += values[i].count;
+        reducedVal.totalMarks += values[i].totalMarks;
+    }
+    return reducedVal;
+  };
+
+  // Finalize Function: Computes average marks
+  var finalizeFunction = function(key, reducedVal) {
+    reducedVal.avgMarks = reducedVal.totalMarks / reducedVal.count;
+    return reducedVal;
+  };
+
+  // Execute MapReduce
+  db.Students.mapReduce(
+    mapFunction,
+    reduceFunction,
+    {
+        out: "course_summary",
+        finalize: finalizeFunction
+    }
+  );
+
+  // View Results
+  db.course_summary.find().pretty();
+  
